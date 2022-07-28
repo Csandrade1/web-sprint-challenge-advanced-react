@@ -51,7 +51,13 @@ export default class AppClass extends React.Component {
   };
 
   reset = () => {
-    this.setState(this.state);
+    this.setState({
+      ...this.state,
+      message: "",
+      email: "",
+      index: 4,
+      steps: 0,
+    });
     // Use this helper to reset all states to their initial values.
   };
 
@@ -167,11 +173,17 @@ export default class AppClass extends React.Component {
       })
       .then((res) => {
         console.log(res);
-        this.setState(this.state);
+        this.setState({
+          ...this.state,
+          message: res.data.message,
+          email: initialEmail,
+        });
       })
       .catch((err) => {
-        this.setState({ message: err.response.data.message });
-        console.log("There was an error!", err);
+        this.setState({
+          ...this.state,
+          message: err.response.data.message,
+        });
       });
   };
   // Use a POST request to send a payload to the server.
@@ -182,7 +194,11 @@ export default class AppClass extends React.Component {
       <div id="wrapper" className={className}>
         <div className="info">
           <h3 id="coordinates">{this.getXYMessage()}</h3>
-          <h3 id="steps">Steps {this.state.steps}</h3>
+          <h3 id="steps">
+            {this.state.steps === 1
+              ? `You moved ${this.state.steps} time`
+              : `You moved ${this.state.steps} times`}
+          </h3>
         </div>
         <div id="grid">
           {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((idx) => (
@@ -210,13 +226,14 @@ export default class AppClass extends React.Component {
           <button onClick={this.move} id="down">
             DOWN
           </button>
-          <button onClick={this.move} id="reset">
+          <button onClick={this.reset} id="reset">
             reset
           </button>
         </div>
         <form onSubmit={this.onSubmit}>
           <input
             onChange={this.onChange}
+            value={this.state.email}
             id="email"
             type="email"
             placeholder="type email"
